@@ -1,0 +1,127 @@
+import 'package:flutter/material.dart';
+import 'package:short_share/api.dart';
+import 'package:share/share.dart';
+import 'package:flutter/services.dart';
+
+class HomePage extends StatelessWidget {
+  final String title;
+
+  HomePage({Key key, this.title}) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(title: Text(title)),
+      body: MainForm(),
+      drawer: Drawer(
+        child: ListView(
+          padding: EdgeInsets.zero,
+          children: <Widget>[
+            DrawerHeader(
+              child: Text('Drawer Header'),
+              decoration: BoxDecoration(
+                color: Colors.blue,
+              ),
+            ),
+            ListTile(
+              leading: Icon(Icons.settings),
+              title: Text('Settings'),
+              onTap: () {
+                Navigator.pushNamed(context, '/settings');
+              },
+            ),
+            ListTile(
+              leading: Icon(Icons.help),
+              title: Text('Help'),
+              onTap: () {
+                Navigator.pushNamed(context, '/help');
+              },
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class MainForm extends StatefulWidget {
+  MainForm({Key key}) : super(key: key);
+
+  @override
+  _MainFormState createState() => _MainFormState();
+}
+
+class _MainFormState extends State<MainForm> {
+  final _formKey = GlobalKey<FormState>();
+  final urlController = TextEditingController();
+  final surlController = TextEditingController();
+
+  @override
+  void dispose() {
+    // Clean up the controller when the widget is disposed.
+    urlController.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+        padding: EdgeInsets.all(32),
+        child: Form(
+          key: _formKey,
+          child: Column(children: <Widget>[
+            TextFormField(
+                controller: urlController,
+                decoration: InputDecoration(
+                  labelText: "Enter URL:",
+                )),
+            TextFormField(
+                controller: surlController,
+                decoration: InputDecoration(
+                  labelText: "Shortened URL:",
+                )),
+            //Padding(padding: EdgeInsets.symmetric(vertical: 16)),
+            /*Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: <Widget>[
+                  RaisedButton(
+                    onPressed: () async {
+                      final snackBar = SnackBar(content: Text("Processing"),);
+                      Scaffold.of(context).showSnackBar(snackBar);
+                      String shortUrl = await cuttlyShorten(urlController.text);
+                      print(shortUrl);
+                      surlController.text = shortUrl;
+                    },
+                    child: Text("Shorten"),
+                  ),
+                  Padding(padding: EdgeInsets.symmetric(horizontal: 16)),
+                  RaisedButton(
+                    onPressed: () {
+                       
+                      Share.share(surlController.text);
+                    },
+                    child: Text("Share",),
+                  ),
+                ],
+              ),*/
+            Padding(padding: EdgeInsets.symmetric(vertical: 16)),
+            RaisedButton(
+                child: Text("AutoShare"),
+                onPressed: () async {
+                  final snackBar = SnackBar(
+                    content: Text("Processing"),
+                  );
+                  Scaffold.of(context).showSnackBar(snackBar);
+                  if (urlController.text.isEmpty) {
+                    urlController.text =
+                        (await Clipboard.getData(Clipboard.kTextPlain)).text;
+                  }
+                  String shortUrl = await cuttlyShorten(urlController.text);
+                  print(shortUrl);
+                  surlController.text = shortUrl;
+                  Share.share(surlController.text);
+                })
+          ]),
+        ));
+  }
+}
