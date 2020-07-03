@@ -2,10 +2,10 @@
 
 A link shortener app for android.
 
-#Shortening Services Supported
+# Shortening Services Supported
 
 cutt.ly
 
-#How to install?
+# How to install?
 
 get .apk file from the releases page
